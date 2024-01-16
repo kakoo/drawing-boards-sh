@@ -4,15 +4,20 @@ import './App.css';
 interface Shape {
   id: number;
   type: 'rectangle' | 'circle';
-  size: number;
   top: number;
   left: number;
+  width?: number;
+  height?: number;
+  isResizing?: boolean;
 }
 
 function App() {
   const [shapes, setShapes] = useState<Shape[]>([]);
-  const [idCounter, setIdCounter] = useState<number>(1);
+  const [currentShape, setCurrentShape] = useState<Shape | null>(null);
   const [selectedShape, setSelectedShape] = useState<'rectangle' | 'circle' | null>(null);
+  const [isDrawing, setIsDrawing] = useState<boolean>(false);
+  
+  const borderRef = useRef<HTMLDivElement>(null);
 
   // '사각형' 또는 '원' 버튼 클릭 시 선택된 도형 타입 설정
   const handleButtonClick = (shapeType: 'rectangle' | 'circle') => {
@@ -24,31 +29,59 @@ function App() {
     setShapes([]);
   };
 
-  // 부모 div 클릭 시 해당 위치에 선택된 도형 추가
-  const handleParentClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+  // 그림판 div 클릭 시 해당 위치에 선택된 도형 추가
+  const handleBorderClick = (event: React.MouseEvent) => {
+    console.log("handleBorderClick");
     if (selectedShape) {
-      const parentDiv = parentRef.current;
-      if (parentDiv) {
-        const rect = parentDiv.getBoundingClientRect();
-        const size = 10;
-        const top = event.clientY - rect.top - size / 2;
-        const left = event.clientX - rect.left - size / 2;
+      const BordertDiv = borderRef.current;
+      if (BordertDiv) {
+        const { clientX, clientY } = event;
+        const boardRect = BordertDiv.getBoundingClientRect();
 
         const newShape: Shape = {
-          id: idCounter,
-          type: selectedShape,
-          size,
-          top: Math.max(0, Math.min(rect.height - size, top)),
-          left: Math.max(0, Math.min(rect.width - size, left)),
+          id: shapes.length + 1,
+          type: selectedShape || 'rectangle',
+          top: clientY - boardRect.top,
+          left: clientX - boardRect.left,
+          width: currentShape?.width || 0,
+          height: currentShape?.height || 0,
         };
 
-        setShapes([...shapes, newShape]);
-        setIdCounter(idCounter + 1);
+        setCurrentShape(newShape);
+        setIsDrawing(true);
       }
     }
   };
 
-  const parentRef = useRef<HTMLDivElement>(null);
+  //마우스 움직임 감지
+  const handleMouseMove = (event: React.MouseEvent) => {
+    if (isDrawing && currentShape) {
+      const { clientX, clientY } = event;
+      const boardRect = borderRef.current!.getBoundingClientRect();
+
+      const newWidth = clientX - boardRect.left - currentShape.left;
+      const newHeight = clientY - boardRect.top - currentShape.top;
+
+      setCurrentShape((prevShape) => ({
+        ...prevShape!,
+        width: Math.max(0, newWidth),
+        height: Math.max(0, newHeight),
+      }));
+
+    }
+  };
+
+  //마우스 동작 멈춤
+  const handleMouseUp = () => {
+    console.log("handleMouseUp");
+
+    if (currentShape) {
+      setShapes((prevShapes) => [...prevShapes, currentShape]);
+    }
+    
+    setIsDrawing(false);
+    setCurrentShape(null);
+  };
 
   return (
     <div className="App">
@@ -59,13 +92,19 @@ function App() {
           <button onClick={() => handleButtonClick('circle')}>Circle</button>
           <button onClick={handleClearClick}>Clear</button>
         </div>
-        <div className="board-box" ref={parentRef} onClick={handleParentClick}>
+        <div 
+          className="board-box" 
+          ref={borderRef}
+          onMouseDown={handleBorderClick}
+          onMouseMove={handleMouseMove}
+          onMouseUp={handleMouseUp}
+        >
         {shapes.map((shape) => (
           <div
             key={shape.id}
             style={{
-              width: shape.size,
-              height: shape.size,
+              width: `${shape.width}px`,
+              height: `${shape.height}px`,
               borderRadius: shape.type === 'circle' ? '50%' : '0',
               backgroundColor: 'transparent',
               border: '1px solid #000',
@@ -75,6 +114,20 @@ function App() {
             }}
           ></div>
         ))}
+        {currentShape && (
+          <div
+            style={{
+              position: 'absolute',
+              top: currentShape.top,
+              left: currentShape.left,
+              width: currentShape.width,
+              height: currentShape.height,
+              borderRadius: currentShape.type === 'circle' ? '50%' : '0',
+              backgroundColor: 'transparent',
+              border: '1px solid #000',
+            }}
+          ></div>
+          )}
         </div>
       </header>
     </div>
