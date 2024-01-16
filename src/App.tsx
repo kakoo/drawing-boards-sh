@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import './App.css';
 
 interface Shape {
@@ -19,6 +19,21 @@ function App() {
   
   const borderRef = useRef<HTMLDivElement>(null);
 
+  // 웹스토리지에 저장되어있는 도형 정보
+  useEffect(() => {
+    const storedShapes = localStorage.getItem('shapes');
+    if (storedShapes) {
+      setShapes(JSON.parse(storedShapes));
+    }
+  }, []);
+
+  // 웹스토리지에 저장하기
+  useEffect(() => {
+    if (shapes.length > 0) {
+      localStorage.setItem('shapes', JSON.stringify(shapes));
+    }
+  }, [shapes]);
+
   // '사각형' 또는 '원' 버튼 클릭 시 선택된 도형 타입 설정
   const handleButtonClick = (shapeType: 'rectangle' | 'circle') => {
     setSelectedShape(shapeType);
@@ -27,6 +42,7 @@ function App() {
   // 모든 도형 지우기
   const handleClearClick = () => {
     setShapes([]);
+    localStorage.removeItem('shapes');
   };
 
   // 그림판 div 클릭 시 해당 위치에 선택된 도형 추가
