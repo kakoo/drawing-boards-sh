@@ -89,8 +89,6 @@ function App() {
 
   //마우스 동작 멈춤
   const handleMouseUp = () => {
-    console.log("handleMouseUp");
-
     if (currentShape) {
       setShapes((prevShapes) => [...prevShapes, currentShape]);
     }
