@@ -43,12 +43,20 @@ function App() {
     setIsEditMode(false);
   };
 
-  // 모든 도형 지우기
-  const handleClearClick = () => {
-    setIsEditMode(false);
-    setSelectedShape(null);
-    setShapes([]);
-    localStorage.removeItem('shapes');
+  // 도형 지우기
+  const handleClearClick = (clearType: 'all' | number | null) => {
+    if (clearType === 'all') { //모든 도형 지우기
+      setIsEditMode(false);
+      setSelectedShape(null);
+      setShapes([]);
+      localStorage.removeItem('shapes');
+    } else if (clearType != null) { //개별 도형 지우기
+        setSelectedShape(null);
+        setShapes((prevShapes) => prevShapes.filter((shape) => shape.id !== clearType));
+        if (shapes.length === 1) {
+          localStorage.removeItem('shapes'); //마지막 도형을 지우면, 스토리지 키도 삭제 한다.
+        }
+    }
   };
 
   // 그림판 div 클릭 시 해당 위치에 선택된 도형 추가
@@ -59,8 +67,11 @@ function App() {
         const { clientX, clientY } = event;
         const boardRect = BordertDiv.getBoundingClientRect();
 
+        //개별 삭제가 기능이 추가 되면서 id 체계도 변경. 가장 마지막 shape의 id에서 +1
+        const nextId = shapes.length > 0 ? shapes[shapes.length - 1].id + 1 : 1;
+
         const newShape: Shape = {
-          id: shapes.length + 1,
+          id: nextId,
           type: selectedShape || 'rectangle',
           top: clientY - boardRect.top,
           left: clientX - boardRect.left,
@@ -131,7 +142,7 @@ function App() {
   //편집 모드의 경우, 만들어진 도형을 선택 할 수 있다.
   const handleShapeClick = (clickedShape: Shape) => {
     if (isEditMode) {
-      console.log(clickedShape.id + "도형 선택");
+      //console.log(clickedShape.id + "도형 선택");
     }
   };
 
@@ -153,7 +164,7 @@ function App() {
         <div className="button-box">
           <button onClick={() => handleButtonClick('rectangle')}style={{backgroundColor: selectedShape === 'rectangle' ? '#B2B2B2' : '#EFEFEF'}}>Box</button>
           <button onClick={() => handleButtonClick('circle')} style={{backgroundColor: selectedShape === 'circle' ? '#B2B2B2' : '#EFEFEF'}}>Circle</button>
-          <button onClick={handleClearClick}>Clear</button>
+          <button onClick={() => handleClearClick('all')}>모든 도형 삭제</button>
           <button onClick={handleEditModeToggle} style={{backgroundColor: isEditMode ? '#B2B2B2' : '#EFEFEF'}}>편집모드</button>
         </div>
         <div 
@@ -179,7 +190,9 @@ function App() {
               left: `${shape.left}px`,
               cursor: 'move'
             }}
-          ></div>
+          >
+            <div className='shapeClear' onClick={() => handleClearClick(shape.id)} style={{display: isEditMode ? 'inline' : 'none'}}>X</div>
+          </div>
         ))}
         {currentShape && (
           <div

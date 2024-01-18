@@ -13,12 +13,16 @@
     - useEffect 함수를 통해 실시간으로 localStorage의 shapes 값을 가져오고 저장한다.
 4. 편집모드 추가, 선택한 도형의 위치를 옮길 수 있다.
     - 편집모드 버튼을 추가 하였다.
-    - onClick 이벤트로 도형을 선택 할 수 있다. (도형 삭제시 사용) handleShapeClick
+    - onClick 이벤트로 도형을 선택 할 수 있다. (도형 순서 변경시 사용) handleShapeClick
     - onMouseDown 이벤트로 마우스 움직임으로 선택 도형을 감지한다. handleShapeDrag
     - 편집모드 확인 후 드레그된 도형의 위치를 이동 및 웹스토리지에 저장한다. handleMouseMove
     - useRef dragStartPoint 으로 좌표값을 기억한다.
-    - 마우스 움직임이 끝나면 선택 도형 setselectedMoveShape 값을 null 처리 한다.
-5. 선택한 도형만 삭제 할 수 있다. (TODO)
+    - 마우스 움직임이 끝나면 선택 도형 setselectedMoveShape 값을 nugll 처리 한다.
+5. 선택한 도형만 삭제 할 수 있다.
+    - 편집모드 경우, 만들어진 도형에 x 표시를 누르면 동작한다.
+    - handleClearClick에 도형의 id를 전달 한다.
+    - 마지막 도형을 지우면, 웹스토리지 키도 함께 삭제 한다.
+    - 도형 개별 삭제 기능으로 id 체계도 변경. 가장 마지막 shape의 id에서 +1
 6. 선택한 도형의 표시 순서를 바꿀 수 있다. (TODO)
 7. 테스트 코드를 작성한다. (TODO)
 

@@ -40,3 +40,13 @@ button:focus {
 button:hover {
   background: #c0c0c0;
 }
+
+.shapeClear {
+  width: 12px;
+  height: 13px;
+  cursor: pointer;
+  background-color: #ecffaa;
+  color: black;
+  font-size: 10px;
+  padding: 2px;
+}
