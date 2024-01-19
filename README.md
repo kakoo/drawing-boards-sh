@@ -19,11 +19,15 @@
     - useRef dragStartPoint 으로 좌표값을 기억한다.
     - 마우스 움직임이 끝나면 선택 도형 setselectedMoveShape 값을 nugll 처리 한다.
 5. 선택한 도형만 삭제 할 수 있다.
-    - 편집모드 경우, 만들어진 도형에 x 표시를 누르면 동작한다.
+    - 편집모드 경우, ~~만들어진 도형에 x 표시를 누르면 동작한다.~~ 삭제 버튼을 클릭하면 삭제된다.
     - handleClearClick에 도형의 id를 전달 한다.
     - 마지막 도형을 지우면, 웹스토리지 키도 함께 삭제 한다.
-    - 도형 개별 삭제 기능으로 id 체계도 변경. 가장 마지막 shape의 id에서 +1
-6. 선택한 도형의 표시 순서를 바꿀 수 있다. (TODO)
+    - ~~도형 개별 삭제 기능으로 id 체계도 변경. 가장 마지막 shape의 id에서 +1~~
+6. 선택한 도형의 표시 순서를 바꿀 수 있다.
+    - 편집모드 경우, 도형을 선택하면 도형의 색이 변하고 삭제, 맨 앞으로, 맨 뒤로 버튼이 보인다.
+    - 맨 앞으로 클릭, 먼저 filter 함수로 선택 도형 제외, find 함수로 선택 도형으로 배열을 다시 저장한다. handleShapeBringToFront
+    - 맨 뒤로 클릭, 먼저 find 함수로 선택 도형, filter 함수로 선택 도형 제외 하여 배열을 다시 저장한다. handleShapeSendToBack
+    - 도형 개별 표시 순서 편집으로 id 체계도 변경. 가장 큰 shape의 id에서 +1
 7. 테스트 코드를 작성한다. (TODO)
 
 # Getting Started with Create React App

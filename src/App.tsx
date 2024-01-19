@@ -21,6 +21,7 @@ function App() {
   const [selectedMoveShape, setselectedMoveShape] = useState<number | null>(null);
   const dragStartPoint = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
   const borderRef = useRef<HTMLDivElement>(null);
+  const [editShape, seteditShape] = useState<number | null>(null);
 
   // 웹스토리지에 저장되어있는 도형 정보
   useEffect(() => {
@@ -41,6 +42,7 @@ function App() {
   const handleButtonClick = (shapeType: 'rectangle' | 'circle') => {
     setSelectedShape(shapeType);
     setIsEditMode(false);
+    seteditShape(null);
   };
 
   // 도형 지우기
@@ -48,10 +50,12 @@ function App() {
     if (clearType === 'all') { //모든 도형 지우기
       setIsEditMode(false);
       setSelectedShape(null);
+      seteditShape(null);
       setShapes([]);
       localStorage.removeItem('shapes');
     } else if (clearType != null) { //개별 도형 지우기
         setSelectedShape(null);
+        seteditShape(null);
         setShapes((prevShapes) => prevShapes.filter((shape) => shape.id !== clearType));
         if (shapes.length === 1) {
           localStorage.removeItem('shapes'); //마지막 도형을 지우면, 스토리지 키도 삭제 한다.
@@ -67,8 +71,8 @@ function App() {
         const { clientX, clientY } = event;
         const boardRect = BordertDiv.getBoundingClientRect();
 
-        //개별 삭제가 기능이 추가 되면서 id 체계도 변경. 가장 마지막 shape의 id에서 +1
-        const nextId = shapes.length > 0 ? shapes[shapes.length - 1].id + 1 : 1;
+        //개별 위치 변경 기능이 추가 되면서 id 체계도 변경. 가장 큰 shape의 id에서 +1
+        const nextId = shapes.length > 0 ? Math.max(...shapes.map((shape) => shape.id)) + 1 : 1;
 
         const newShape: Shape = {
           id: nextId,
@@ -142,7 +146,8 @@ function App() {
   //편집 모드의 경우, 만들어진 도형을 선택 할 수 있다.
   const handleShapeClick = (clickedShape: Shape) => {
     if (isEditMode) {
-      //console.log(clickedShape.id + "도형 선택");
+      console.log(clickedShape.id + "도형 선택");
+      seteditShape(clickedShape.id);
     }
   };
 
@@ -157,6 +162,22 @@ function App() {
     }
   };
 
+  //선택한 도형을 배열의 젤 끝으로.
+  const handleShapeBringToFront = (id: number) => {
+    setShapes((prevShapes) => [
+      ...prevShapes.filter((shape) => shape.id !== id),
+      prevShapes.find((shape) => shape.id === id)!,
+    ]);
+  };
+
+  //선택한 도형을 배열의 젤 앞으로.
+  const handleShapeSendToBack = (id: number) => {
+    setShapes((prevShapes) => [
+      prevShapes.find((shape) => shape.id === id)!,
+      ...prevShapes.filter((shape) => shape.id !== id),
+    ]);
+  };
+
   return (
     <div className="App">
       <header className="App-header">
@@ -166,6 +187,11 @@ function App() {
           <button onClick={() => handleButtonClick('circle')} style={{backgroundColor: selectedShape === 'circle' ? '#B2B2B2' : '#EFEFEF'}}>Circle</button>
           <button onClick={() => handleClearClick('all')}>모든 도형 삭제</button>
           <button onClick={handleEditModeToggle} style={{backgroundColor: isEditMode ? '#B2B2B2' : '#EFEFEF'}}>편집모드</button>
+          <div className='button-edit-box' style={{display: isEditMode && editShape ? 'inline' : 'none'}}>
+            <button onClick={() => editShape ? handleClearClick(editShape) : null}>삭제</button>
+            <button onClick={() => editShape ? handleShapeBringToFront(editShape) : null}>맨 앞으로</button>
+            <button onClick={() => editShape ? handleShapeSendToBack(editShape) : null}>맨 뒤로</button>
+          </div>
         </div>
         <div 
           className="board-box" 
@@ -183,15 +209,14 @@ function App() {
               width: `${shape.width}px`,
               height: `${shape.height}px`,
               borderRadius: shape.type === 'circle' ? '50%' : '0',
-              backgroundColor: 'transparent',
+              backgroundColor: editShape === shape.id ? '#ecffaa' : 'transparent',
               border: '1px solid #000',
               position: 'absolute',
               top: `${shape.top}px`,
               left: `${shape.left}px`,
-              cursor: 'move'
+              cursor: isEditMode ? 'move' : 'auto'
             }}
           >
-            <div className='shapeClear' onClick={() => handleClearClick(shape.id)} style={{display: isEditMode ? 'inline' : 'none'}}>X</div>
           </div>
         ))}
         {currentShape && (
