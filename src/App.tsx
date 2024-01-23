@@ -192,6 +192,9 @@ const App: React.FC = () => {
             <button onClick={() => editShape ? handleShapeBringToFront(editShape) : null}>맨 앞으로</button>
             <button onClick={() => editShape ? handleShapeSendToBack(editShape) : null}>맨 뒤로</button>
           </div>
+          <div style={{color: '#000', fontSize: '12px', display: isEditMode && !editShape ? 'inline' : 'none'}}>
+            도형을 선택하세요
+          </div>
         </div>
         <div
           data-testid="board-box"
