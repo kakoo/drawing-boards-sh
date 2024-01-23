@@ -28,7 +28,13 @@
     - 맨 앞으로 클릭, 먼저 filter 함수로 선택 도형 제외, find 함수로 선택 도형으로 배열을 다시 저장한다. handleShapeBringToFront
     - 맨 뒤로 클릭, 먼저 find 함수로 선택 도형, filter 함수로 선택 도형 제외 하여 배열을 다시 저장한다. handleShapeSendToBack
     - 도형 개별 표시 순서 편집으로 id 체계도 변경. 가장 큰 shape의 id에서 +1
-7. 테스트 코드를 작성한다. (TODO)
+7. 테스트 코드를 작성한다. 
+    - Jest 테스트 라이브러리를 사용하여 간단한 테스트 코드 작성
+        - Box 버튼 클릭
+        - 마우스를 그림판에 클릭, 마우스를 움직여 사각형 그리기
+        - 웹스토리지에 저장
+        - 삭제 버튼을 클릭하여 웹스토리지에서 도형 삭제
+    - TODO 전체 기능을 단계별 테스트 코드 구현, 웹스토리지 결과값 확인. 
 
 # Getting Started with Create React App
 create-react-app을 typescript 버전으로 설치.

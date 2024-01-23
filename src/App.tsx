@@ -12,7 +12,7 @@ interface Shape {
   isSelected: boolean;
 }
 
-function App() {
+const App: React.FC = () => {
   const [shapes, setShapes] = useState<Shape[]>([]);
   const [currentShape, setCurrentShape] = useState<Shape | null>(null);
   const [selectedShape, setSelectedShape] = useState<'rectangle' | 'circle' | null>(null);
@@ -193,7 +193,8 @@ function App() {
             <button onClick={() => editShape ? handleShapeSendToBack(editShape) : null}>맨 뒤로</button>
           </div>
         </div>
-        <div 
+        <div
+          data-testid="board-box"
           className="board-box" 
           ref={borderRef}
           onMouseDown={handleBorderClick}
@@ -203,6 +204,7 @@ function App() {
         {shapes.map((shape) => (
           <div
             key={shape.id}
+            data-testid={`shape-${shape.id}`}
             onClick={() => handleShapeClick(shape)}
             onMouseDown={(e) => handleShapeDrag(e, shape)}
             style={{
